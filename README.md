@@ -2,7 +2,7 @@
 
 # Repo Explorer (Step 1: Live API Tools)
 
-An agentic assistant with two REAL external API tools â€” no fake data, no
+An agentic assistant with two REAL external API tools no fake data, no
 API keys beyond Anthropic's. This is step 1 of a larger build:
 
 1. **Live API tools** (this step) â€” GitHub + weather, real network calls
