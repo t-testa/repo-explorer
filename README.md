@@ -5,10 +5,10 @@
 An agentic assistant with two REAL external API tools no fake data, no
 API keys beyond Anthropic's. This is step 1 of a larger build:
 
-1. **Live API tools** (this step) â€” GitHub + weather, real network calls
-2. RAG over public docs â€” index an open-source project's README
-3. Repo Q&A tool â€” combine steps 1+2 to answer questions about any public repo
-4. Multi-agent system â€” split into a "fetcher" agent and a "Q&A" agent with a router
+1. **Live API tools** (this step) GitHub + weather, real network calls
+2. RAG over public docs index an open-source project's README
+3. Repo Q&A tool combine steps 1+2 to answer questions about any public repo
+4. Multi-agent system split into a "fetcher" agent and a "Q&A" agent with a router
 
 ## Files
 
