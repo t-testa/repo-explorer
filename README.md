@@ -1,61 +1,57 @@
-﻿![tests](https://github.com/newtocode80/repo-explorer/actions/workflows/tests.yml/badge.svg)
+# Repo Explorer
 
-# Repo Explorer (Step 1: Live API Tools)
+A Python assistant that combines live GitHub metadata and weather tools with retrieval over a public repository's README.
 
-An agentic assistant with two REAL external API tools no fake data, no
-API keys beyond Anthropic's. This is step 1 of a larger build:
+## Implemented features
 
-1. **Live API tools** (this step) GitHub + weather, real network calls
-2. RAG over public docs index an open-source project's README
-3. Repo Q&A tool combine steps 1+2 to answer questions about any public repo
-4. Multi-agent system split into a "fetcher" agent and a "Q&A" agent with a router
+- A direct Anthropic tool-calling loop in `agent.py`.
+- GitHub and weather requests with error handling in `api_tools.py`.
+- README fetching, overlapping chunks, OpenAI embeddings and session-cached Chroma retrieval in `readme_rag.py`.
+- Tests for API tools, agent behavior and README retrieval.
+
+**Status:** the single-agent implementation is the documented entry point. `multi_agent.py` is an unfinished router experiment and currently contains a syntax error; it is not a runnable multi-agent system.
+
+## Setup and run
+
+From the repository root, in a Python virtual environment:
+
+```powershell
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Set `ANTHROPIC_API_KEY` for agent calls and `OPENAI_API_KEY` for README embeddings in your local `.env`.
+
+```powershell
+python agent.py
+```
+
+For a standalone live README retrieval example:
+
+```powershell
+python readme_rag.py
+```
+
+Live agent and embedding calls incur API usage. The GitHub tool and README fetcher access public repositories without GitHub authentication.
+
+## Tests
+
+```powershell
+python -m pytest -v
+```
+
+The test files use mocks to exercise external API behavior. See [the test workflow](.github/workflows/tests.yml) for CI configuration.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `api_tools.py` | GitHub + weather API calls, with real error handling |
-| `agent.py` | Agent loop using the two live tools |
-| `test_api_tools.py` | Unit tests with mocked network calls |
+| `api_tools.py` | GitHub and weather tools |
+| `agent.py` | Single-agent loop |
+| `readme_rag.py` | README retrieval and in-memory index |
+| `multi_agent.py` | Incomplete routing experiment |
+| `test_api_tools.py`, `test_agent.py`, `test_readme_rag.py` | Automated tests |
 
-## Setup
+## Limitations
 
-```bash
-pip install anthropic python-dotenv requests pytest
-copy .env.example .env
-# edit .env, add your real ANTHROPIC_API_KEY, save
-```
-
-## Run
-
-```bash
-# Free, fast, no network calls (mocked) â€” run this first
-python -m pytest test_api_tools.py -v
-
-# Live agent â€” costs a few cents in API usage
-python agent.py
-```
-
-## Why this step matters
-
-Most LLM tutorials use either zero tools or fake/local data. Two things
-change once a tool hits a **real** external API:
-
-1. **Errors are real, not contrived.** GitHub's unauthenticated rate limit
-   (60 requests/hour) actually got hit while building this â€” so the error
-   handling for that case isn't theoretical, it's tested against a failure
-   that genuinely happened.
-2. **You can't assert exact responses in tests**, because live data changes
-   (star counts go up, weather changes). The unit tests here mock the
-   network layer with `unittest.mock.patch`, so they test *your error
-   handling logic*, not whether the internet is currently working. This is
-   the standard professional pattern for testing any code that calls an
-   external API â€” also worth name-dropping in interviews.
-
-## Known limitation (by design, for this step)
-
-The weather tool only supports a fixed list of cities (Montreal, NYC, SF,
-London, Toronto, Paris) since it skips a geocoding API to keep this step
-focused on the tool-use mechanics rather than chaining a third API. Real
-production version would add a geocoding lookup first.
-
+README retrieval sees documentation only, not the repository's full source code. Indexes are cached in memory for the current process and do not automatically reflect upstream edits. Unauthenticated GitHub requests can be rate-limited. Weather lookup supports a fixed list of cities. This repository does not include a completed multi-agent workflow.
